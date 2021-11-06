@@ -8,7 +8,6 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["orderByAggregateGroup", "selectRelationCount", "referentialActions"]
 }
 
 model Article {
@@ -48,7 +47,7 @@ model User {
   email      String    @unique
   username   String    @unique
   password   String
-  image      String?   @default("https://realworld-temp-api.herokuapp.com/images/smiley-cyrus.jpeg")
+  image      String?   @default("https://api.realworld.io/images/smiley-cyrus.jpeg")
   bio        String?
   articles   Article[] @relation("UserArticles")
   favorites  Article[] @relation("UserFavorites", references: [id])
