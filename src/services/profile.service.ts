@@ -2,14 +2,22 @@ import prisma from '../../prisma/prisma-client';
 import profileMapper from '../utils/profile.utils';
 import HttpException from '../models/http-exception.model';
 import { findUserIdByUsername } from './auth.service';
+import { Profile } from '../models/profile.model';
 
-export const getProfile = async (username: string) => {
+export const getProfile = async (profileUsername: string | undefined, username: string | undefined): Promise<Profile> => {
   const profile = await prisma.user.findUnique({
     where: {
-      username,
+      username: profileUsername,
     },
-    include: {
-      followedBy: true,
+    select: {
+      username: true,
+      bio: true,
+      image: true,
+      followedBy: {
+        select: {
+          username: true,
+        },
+      },
     },
   });
 
@@ -20,12 +28,12 @@ export const getProfile = async (username: string) => {
   return profileMapper(profile, username);
 };
 
-export const followUser = async (usernamePayload: string, usernameAuth: string) => {
-  const id = await findUserIdByUsername(usernameAuth);
+export const followUser = async (profileUsername: string, username: string): Promise<Profile> => {
+  const id = await findUserIdByUsername(username);
 
   const profile = await prisma.user.update({
     where: {
-      username: usernamePayload,
+      username: profileUsername,
     },
     data: {
       followedBy: {
@@ -39,15 +47,15 @@ export const followUser = async (usernamePayload: string, usernameAuth: string) 
     },
   });
 
-  return profileMapper(profile, usernameAuth);
+  return profileMapper(profile, username);
 };
 
-export const unfollowUser = async (usernamePayload: string, usernameAuth: string) => {
-  const id = await findUserIdByUsername(usernameAuth);
+export const unfollowUser = async (profileUsername: string, username: string): Promise<Profile> => {
+  const id = await findUserIdByUsername(username);
 
   const profile = await prisma.user.update({
     where: {
-      username: usernamePayload,
+      username: profileUsername,
     },
     data: {
       followedBy: {
@@ -61,5 +69,5 @@ export const unfollowUser = async (usernamePayload: string, usernameAuth: string
     },
   });
 
-  return profileMapper(profile, usernameAuth);
+  return profileMapper(profile, username);
 };
