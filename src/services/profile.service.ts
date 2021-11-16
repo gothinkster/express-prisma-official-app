@@ -2,23 +2,18 @@ import prisma from '../../prisma/prisma-client';
 import profileMapper from '../utils/profile.utils';
 import HttpException from '../models/http-exception.model';
 import { findUserIdByUsername } from './auth.service';
-import { Profile } from '../models/profile.model';
+import { Profile } from '../models/user.model';
+import profileSelector from '../selectors/profile.selector';
 
-export const getProfile = async (profileUsername: string | undefined, username: string | undefined): Promise<Profile> => {
+export const getProfile = async (
+  profileUsername: string | undefined,
+  username: string | undefined,
+): Promise<Profile> => {
   const profile = await prisma.user.findUnique({
     where: {
       username: profileUsername,
     },
-    select: {
-      username: true,
-      bio: true,
-      image: true,
-      followedBy: {
-        select: {
-          username: true,
-        },
-      },
-    },
+    select: profileSelector,
   });
 
   if (!profile) {
@@ -42,9 +37,7 @@ export const followUser = async (profileUsername: string, username: string): Pro
         },
       },
     },
-    include: {
-      followedBy: true,
-    },
+    select: profileSelector,
   });
 
   return profileMapper(profile, username);
@@ -64,9 +57,7 @@ export const unfollowUser = async (profileUsername: string, username: string): P
         },
       },
     },
-    include: {
-      followedBy: true,
-    },
+    select: profileSelector,
   });
 
   return profileMapper(profile, username);

@@ -1,5 +1,4 @@
 import { Profile, User } from '../models/user.model';
-import { User } from '@prisma/client';
 import { ProfileResponse } from '../models/profile-response.model';
 
 const profileMapper = (profile: ProfileResponse, username: string | undefined): Profile => ({
