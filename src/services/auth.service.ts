@@ -1,12 +1,16 @@
 import bcrypt from 'bcryptjs';
-import { RegisterInput } from '../models/register-input.model';
 import prisma from '../../prisma/prisma-client';
 import HttpException from '../models/http-exception.model';
-import { RegisteredUser } from '../models/registered-user.model';
-import generateToken from '../utils/token.utils';
-import { User } from '../models/user.model';
+import {
+  UserCreatePayload,
+  UserLoginPayload,
+  UserResponse,
+  UserUpdatePayload,
+} from '../models/user.model';
+import userMapper from '../mappers/user.mapper';
+import userSelector from '../selectors/user.selector';
 
-const checkUserUniqueness = async (email: string, username: string) => {
+const checkUserUniqueness = async (email: string, username: string): Promise<void> => {
   const existingUserByEmail = await prisma.user.findUnique({
     where: {
       email,
@@ -35,11 +39,10 @@ const checkUserUniqueness = async (email: string, username: string) => {
   }
 };
 
-export const createUser = async (input: RegisterInput): Promise<RegisteredUser> => {
+export const createUser = async (input: UserCreatePayload): Promise<UserResponse> => {
   const email = input.email.trim();
   const username = input.username.trim();
   const password = input.password.trim();
-  const { image, bio } = input;
 
   if (!email) {
     throw new HttpException(422, { errors: { email: ["can't be blank"] } });
@@ -62,24 +65,14 @@ export const createUser = async (input: RegisterInput): Promise<RegisteredUser> 
       username,
       email,
       password: hashedPassword,
-      ...(image ? { image } : {}),
-      ...(bio ? { bio } : {}),
     },
-    select: {
-      email: true,
-      username: true,
-      bio: true,
-      image: true,
-    },
+    select: userSelector,
   });
 
-  return {
-    ...user,
-    token: generateToken(user),
-  };
+  return userMapper(user);
 };
 
-export const login = async (userPayload: any) => {
+export const login = async (userPayload: UserLoginPayload): Promise<UserResponse> => {
   const email = userPayload.email.trim();
   const password = userPayload.password.trim();
 
@@ -108,13 +101,7 @@ export const login = async (userPayload: any) => {
     const match = await bcrypt.compare(password, user.password);
 
     if (match) {
-      return {
-        email: user.email,
-        username: user.username,
-        bio: user.bio,
-        image: user.bio,
-        token: generateToken(user),
-      };
+      return userMapper(user);
     }
   }
 
@@ -125,26 +112,25 @@ export const login = async (userPayload: any) => {
   });
 };
 
-export const getCurrentUser = async (username: string) => {
-  const user = (await prisma.user.findUnique({
+export const getCurrentUser = async (username: string): Promise<UserResponse> => {
+  const user = await prisma.user.findUnique({
     where: {
       username,
     },
-    select: {
-      email: true,
-      username: true,
-      bio: true,
-      image: true,
-    },
-  })) as User;
+    select: userSelector,
+  });
 
-  return {
-    ...user,
-    token: generateToken(user),
-  };
+  if (!user) {
+    throw new HttpException(404, {});
+  }
+
+  return userMapper(user);
 };
 
-export const updateUser = async (userPayload: any, loggedInUsername: string) => {
+export const updateUser = async (
+  userPayload: UserUpdatePayload,
+  loggedInUsername: string,
+): Promise<UserResponse> => {
   const { email, username, password, image, bio } = userPayload;
   const user = await prisma.user.update({
     where: {
@@ -157,18 +143,10 @@ export const updateUser = async (userPayload: any, loggedInUsername: string) => 
       ...(image ? { image } : {}),
       ...(bio ? { bio } : {}),
     },
-    select: {
-      email: true,
-      username: true,
-      bio: true,
-      image: true,
-    },
+    select: userSelector,
   });
 
-  return {
-    ...user,
-    token: generateToken(user),
-  };
+  return userMapper(user);
 };
 
 export const findUserIdByUsername = async (username: string): Promise<number> => {

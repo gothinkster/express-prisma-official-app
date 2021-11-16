@@ -1,22 +1,27 @@
-import { CommentResponse } from './comment.model';
-
 export interface User {
-  id: number;
   username: string;
   email: string;
   password: string;
   bio: string | null;
-  image: any | null;
-  articles: any[];
-  favorites: any[];
+  image: string | null;
   // eslint-disable-next-line no-use-before-define
   followedBy: ReadonlyArray<FollowersQueryReponse>;
-  following: ReadonlyArray<User>;
-  comments: ReadonlyArray<CommentResponse>;
+  token: string;
+  following: boolean;
 }
+
+export type UserCreatePayload = Pick<User, 'username' | 'email' | 'password'>;
+
+export type UserUpdatePayload = Pick<User, 'username' | 'image' | 'bio' | 'email' | 'password'>;
+
+export type UserLoginPayload = Pick<User, 'email' | 'password'>;
+
+export type UserQueryResponse = Pick<User, 'username' | 'image' | 'bio' | 'email'>;
+
+export type UserResponse = Pick<User, 'username' | 'image' | 'bio' | 'email' | 'token'>;
 
 export type AuthorQueryResponse = Pick<User, 'username' | 'bio' | 'image' | 'followedBy'>;
 
 export type FollowersQueryReponse = Pick<User, 'username'>;
 
-export type Profile = Pick<User, 'username' | 'bio' | 'image'> & { following: boolean };
+export type Profile = Pick<User, 'username' | 'bio' | 'image' | 'following'>;

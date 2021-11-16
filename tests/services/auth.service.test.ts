@@ -75,7 +75,6 @@ describe('AuthService', () => {
     test('should throw an exception when creating a new user with already existing user on same username ', async () => {
       // Given
       const user = {
-        id: 123,
         username: 'RealWorld',
         email: 'realworld@me',
         password: '1234',
@@ -221,10 +220,11 @@ describe('AuthService', () => {
     test('should return a token', async () => {
       // Given
       const user = {
-        id: 123,
         username: 'RealWorld',
         email: 'realworld@me',
         password: '1234',
+        bio: null,
+        image: null,
       };
 
       const mockedResponse = {
