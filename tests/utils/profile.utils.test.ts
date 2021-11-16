@@ -4,7 +4,7 @@ describe('ProfileUtils', () => {
   describe('profileMapper', () => {
     test('should return a profile', () => {
       // Given
-      const user = {
+      const profile = {
         username: 'RealWorld',
         bio: 'My happy life',
         image: null,
@@ -21,12 +21,12 @@ describe('ProfileUtils', () => {
       };
 
       // Then
-      expect(profileMapper(user, username)).toEqual(expected);
+      expect(profileMapper(profile, username)).toEqual(expected);
     });
 
     test('should return a profile followed by the user', () => {
       // Given
-      const user = {
+      const profile = {
         username: 'RealWorld',
         bio: 'My happy life',
         image: null,
@@ -47,12 +47,12 @@ describe('ProfileUtils', () => {
       };
 
       // Then
-      expect(profileMapper(user, username)).toEqual(expected);
+      expect(profileMapper(profile, username)).toEqual(expected);
     });
 
     test('should return a profile not followed by the user', () => {
       // Given
-      const user = {
+      const profile = {
         username: 'RealWorld',
         bio: 'My happy life',
         image: null,
@@ -73,7 +73,7 @@ describe('ProfileUtils', () => {
       };
 
       // Then
-      expect(profileMapper(user, username)).toEqual(expected);
+      expect(profileMapper(profile, username)).toEqual(expected);
     });
   });
 });

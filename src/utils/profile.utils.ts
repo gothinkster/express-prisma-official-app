@@ -1,11 +1,14 @@
 import { Profile, User } from '../models/user.model';
+import { ProfileResponse } from '../models/profile-response.model';
 
-const profileMapper = (user: any, username: string | undefined): Profile => ({
-  username: user.username,
-  bio: user.bio,
-  image: user.image,
+const profileMapper = (profile: ProfileResponse, username: string | undefined): Profile => ({
+  username: profile.username,
+  bio: profile.bio,
+  image: profile.image,
   following: username
-    ? user?.followedBy.some((followingUser: Partial<User>) => followingUser.username === username)
+    ? profile?.followedBy.some(
+        (followingUser: Pick<User, 'username'>) => followingUser.username === username,
+      )
     : false,
 });
 

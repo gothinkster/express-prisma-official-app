@@ -9,14 +9,14 @@ const router = Router();
  * @auth optional
  * @route {GET} /profiles/:username
  * @param username string
- * @returns profile
+ * @returns Profile profile of an user
  */
 router.get(
   '/profiles/:username',
   auth.optional,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const profile = await getProfile(req.params.username);
+      const profile = await getProfile(req.params.username, req.user?.username);
       res.json({ profile });
     } catch (error) {
       next(error);
@@ -29,14 +29,14 @@ router.get(
  * @auth required
  * @route {POST} /profiles/:username/follow
  * @param username string
- * @returns profile
+ * @returns Profile profile of an user
  */
 router.post(
   '/profiles/:username/follow',
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const profile = await followUser(req.params?.username, req.user?.username as string);
+      const profile = await followUser(req.params?.username, req.user!.username);
       res.json({ profile });
     } catch (error) {
       next(error);
@@ -56,7 +56,7 @@ router.delete(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const profile = await unfollowUser(req.params.username, req.user?.username as string);
+      const profile = await unfollowUser(req.params.username, req.user!.username);
       res.json({ profile });
     } catch (error) {
       next(error);
