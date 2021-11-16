@@ -1,25 +1,7 @@
 import prismaMock from '../prisma-mock';
-import {
-  deleteComment,
-  favoriteArticle,
-  unfavoriteArticle,
-} from '../../src/services/article.service';
+import { favoriteArticle, unfavoriteArticle } from '../../src/services/article.service';
 
 describe('ArticleService', () => {
-  describe('deleteComment', () => {
-    test('should throw an error ', () => {
-      // Given
-      const id = 123;
-      const username = 'RealWorld';
-
-      // When
-      prismaMock.comment.findFirst.mockResolvedValue(null);
-
-      // Then
-      expect(deleteComment(id, username)).rejects.toThrowError();
-    });
-  });
-
   describe('favoriteArticle', () => {
     test('should return the favorited article', async () => {
       // Given
@@ -46,7 +28,18 @@ describe('ArticleService', () => {
         updatedAt: new Date(),
         authorId: 456,
         tagList: [],
-        favoritedBy: [],
+        favoritedBy: [
+          {
+            username: 'Gerome',
+          },
+        ],
+        author: {
+          id: 456,
+          username: 'RealWorld',
+          bio: null,
+          image: null,
+          followedBy: [],
+        },
       };
 
       // When
@@ -96,6 +89,13 @@ describe('ArticleService', () => {
         authorId: 456,
         tagList: [],
         favoritedBy: [],
+        author: {
+          id: 456,
+          username: 'RealWorld',
+          bio: null,
+          image: null,
+          followedBy: [],
+        },
       };
 
       // When

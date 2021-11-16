@@ -1,9 +1,19 @@
-import { Article } from './article.model';
+import { AuthorQueryResponse, Profile } from './user.model';
 
-export interface Comment {
+export interface CommentResponse {
   id: number;
   createdAt: Date;
   updatedAt: Date;
   body: string;
-  article?: Article;
+  author: Profile;
 }
+
+export interface CommentQueryResponse {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  body: string;
+  author: AuthorQueryResponse;
+}
+
+export type CommentListResponse = ReadonlyArray<CommentResponse>;

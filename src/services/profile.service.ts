@@ -21,7 +21,7 @@ export const getProfile = async (username: string) => {
 };
 
 export const followUser = async (usernamePayload: string, usernameAuth: string) => {
-  const { id } = await findUserIdByUsername(usernameAuth);
+  const id = await findUserIdByUsername(usernameAuth);
 
   const profile = await prisma.user.update({
     where: {
@@ -43,7 +43,7 @@ export const followUser = async (usernamePayload: string, usernameAuth: string) 
 };
 
 export const unfollowUser = async (usernamePayload: string, usernameAuth: string) => {
-  const { id } = await findUserIdByUsername(usernameAuth);
+  const id = await findUserIdByUsername(usernameAuth);
 
   const profile = await prisma.user.update({
     where: {
