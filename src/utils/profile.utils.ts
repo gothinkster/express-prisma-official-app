@@ -1,5 +1,4 @@
-import { User } from '../models/user.model';
-import { Profile } from '../models/profile.model';
+import { Profile, User } from '../models/user.model';
 
 const profileMapper = (user: any, username: string | undefined): Profile => ({
   username: user.username,

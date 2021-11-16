@@ -171,7 +171,7 @@ export const updateUser = async (userPayload: any, loggedInUsername: string) => 
   };
 };
 
-export const findUserIdByUsername = async (username: string) => {
+export const findUserIdByUsername = async (username: string): Promise<number> => {
   const user = await prisma.user.findUnique({
     where: {
       username,
@@ -185,5 +185,5 @@ export const findUserIdByUsername = async (username: string) => {
     throw new HttpException(404, {});
   }
 
-  return user;
+  return user.id;
 };

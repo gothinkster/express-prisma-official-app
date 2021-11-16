@@ -1,14 +1,11 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import auth from '../utils/auth';
 import {
-  addComment,
   createArticle,
   deleteArticle,
-  deleteComment,
   favoriteArticle,
   getArticle,
   getArticles,
-  getCommentsByArticle,
   getFeed,
   unfavoriteArticle,
   updateArticle,
@@ -29,8 +26,8 @@ const router = Router();
  */
 router.get('/articles', auth.optional, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await getArticles(req.query, req.user?.username);
-    res.json(result);
+    const articles = await getArticles(req.query, req.user?.username);
+    res.json(articles);
   } catch (error) {
     next(error);
   }
@@ -47,12 +44,12 @@ router.get(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await getFeed(
+      const articles = await getFeed(
         Number(req.query.offset),
         Number(req.query.limit),
-        req.user?.username as string,
+        req.user!.username,
       );
-      res.json(result);
+      res.json(articles);
     } catch (error) {
       next(error);
     }
@@ -70,7 +67,7 @@ router.get(
  */
 router.post('/articles', auth.required, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const article = await createArticle(req.body.article, req.user?.username as string);
+    const article = await createArticle(req.body.article, req.user!.username);
     res.json({ article });
   } catch (error) {
     next(error);
@@ -89,7 +86,7 @@ router.get(
   auth.optional,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const article = await getArticle(req.params.slug, req.user?.username as string);
+      const article = await getArticle(req.params.slug, req.user?.username as string | undefined);
       res.json({ article });
     } catch (error) {
       next(error);
@@ -112,11 +109,7 @@ router.put(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const article = await updateArticle(
-        req.body.article,
-        req.params.slug,
-        req.user?.username as string,
-      );
+      const article = await updateArticle(req.body.article, req.params.slug, req.user!.username);
       res.json({ article });
     } catch (error) {
       next(error);
@@ -144,71 +137,6 @@ router.delete(
 );
 
 /**
- * Get comments from an article
- * @auth optional
- * @route {GET} /articles/:slug/comments
- * @param slug slug of the article (based on the title)
- * @returns comments list of comments
- */
-router.get(
-  '/articles/:slug/comments',
-  auth.optional,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const comments = await getCommentsByArticle(req.params.slug, req.user?.username);
-      res.json({ comments });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-/**
- * Add comment to article
- * @auth required
- * @route {POST} /articles/:slug/comments
- * @param slug slug of the article (based on the title)
- * @bodyparam body content of the comment
- * @returns comment created comment
- */
-router.post(
-  '/articles/:slug/comments',
-  auth.required,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const comment = await addComment(
-        req.body.comment.body,
-        req.params.slug,
-        req.user?.username as string,
-      );
-      res.json({ comment });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-/**
- * Delete comment
- * @auth required
- * @route {DELETE} /articles/:slug/comments/:id
- * @param slug slug of the article (based on the title)
- * @param id id of the comment
- */
-router.delete(
-  '/articles/:slug/comments/:id',
-  auth.required,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await deleteComment(Number(req.params.id), req.user?.username as string);
-      res.sendStatus(204);
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-/**
  * Favorite article
  * @auth required
  * @route {POST} /articles/:slug/favorite
@@ -220,7 +148,7 @@ router.post(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const article = await favoriteArticle(req.params.slug, req.user?.username as string);
+      const article = await favoriteArticle(req.params.slug, req.user!.username);
       res.json({ article });
     } catch (error) {
       next(error);
@@ -240,7 +168,7 @@ router.delete(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const article = await unfavoriteArticle(req.params.slug, req.user?.username as string);
+      const article = await unfavoriteArticle(req.params.slug, req.user!.username);
       res.json({ article });
     } catch (error) {
       next(error);

@@ -1,27 +1,18 @@
 import prisma from '../../prisma/prisma-client';
 
-const getTags = async (username: string | undefined): Promise<string[]> => {
-  const query = {
-    every: {
-      author: {
-        username: {
-          equals: username,
-        },
-      },
-    },
-  };
-
-  const tags = await prisma.tag.groupBy({
+const getTags = async (): Promise<string[]> => {
+  const tags = await prisma.tag.findMany({
     where: {
       articles: {
         some: {},
-        ...(username ? query : {}),
       },
     },
-    by: ['name'],
+    select: {
+      name: true,
+    },
     orderBy: {
-      _count: {
-        name: 'desc',
+      articles: {
+        _count: 'desc',
       },
     },
     take: 10,
