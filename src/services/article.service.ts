@@ -245,7 +245,26 @@ export const updateArticle = async (
   return articleMapper(updatedArticle, username);
 };
 
-export const deleteArticle = async (slug: string): Promise<void> => {
+export const deleteArticle = async (slug: string, username: string): Promise<void> => {
+  const article = await prisma.article.findUnique({
+    where: {
+      slug,
+    },
+    select: {
+      author: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  if (!article) {
+    throw new HttpException(404, {});
+  } else if (article.author.username !== username) {
+    throw new HttpException(403, {});
+  }
+
   await prisma.article.delete({
     where: {
       slug,

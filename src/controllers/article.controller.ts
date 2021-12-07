@@ -128,7 +128,7 @@ router.delete(
   auth.required,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await deleteArticle(req.params.slug);
+      await deleteArticle(req.params.slug, req.user!.username);
       res.sendStatus(204);
     } catch (error) {
       next(error);
