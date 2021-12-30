@@ -11,6 +11,11 @@ const articleSelector = Prisma.validator<Prisma.ArticleSelect>()({
     select: {
       name: true,
     },
+    orderBy: {
+      articles: {
+        _count: 'desc',
+      },
+    },
   },
   author: {
     select: {
